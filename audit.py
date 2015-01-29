@@ -11,7 +11,9 @@ import ansible.inventory
 import sys
 import json
 import jinja2
+import os
 import os.path
+import getpass
 
 
 def run_ansible(inventory, callback, module_name, module_args=''):
@@ -59,12 +61,16 @@ def write_facts(outputdir, host_facts):
 
   for hostname, facts in host_facts.iteritems():
 
+    hostdir = os.path.join(outputdir, hostname)
+    if not os.path.exists(hostdir):
+      os.makedirs(hostdir)
+
     # Write facts to JSON file
-    with open(os.path.join(outputdir, hostname, 'raw' + '.json'), 'w') as json_file:
+    with open(os.path.join(hostdir, 'summary.json'), 'w') as json_file:
       json.dump(facts, json_file, sort_keys=True, indent=4, separators=(',', ': '))
 
-    # Write facts to JSON file using output template
-    with open(os.path.join(outputdir, hostname + '.txt'), 'w') as templated_file:
+    # Write facts to text file using output template
+    with open(os.path.join(hostdir, 'summary.txt'), 'w') as templated_file:
       templated_file.write(hostname)
       templated_file.write(template.render(facts))
 
@@ -74,7 +80,10 @@ def main():
   parser = argparse.ArgumentParser(description='''Inventory audit tool''')
   parser.add_argument('inventory', help='''inventory file (in Ansible format)''')
   parser.add_argument('outputdir', help='''Output directory for results''')
+  parser.add_argument()
   args = parser.parse_args()
+
+  (sshpass, sudopass, su_pass, vault_pass) = utils.ask_passwords(ask_pass=args.ask_pass, ask_sudo_pass=args.ask_sudo_pass, ask_su_pass=args.ask_su_pass, ask_vault_pass=args.ask_vault_pass)
 
   # Collect basic ansible facts
   inventory = ansible.inventory.Inventory(args.inventory)
