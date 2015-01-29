@@ -1,2 +1,2 @@
 # server-audit
-Leverages ansible to provide basic server auditing tasks
+Leverages ansible to provide basic server auditing
