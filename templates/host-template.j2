@@ -1,0 +1,40 @@
+
+
+  Hardware platform
+
+    Product name:           {{ ansible_facts.ansible_product_name }}
+    Product serial:         {{ ansible_facts.ansible_product_serial }}
+    Architecture:           {{ ansible_facts.ansible_architecture }}
+    Virtualisation role:    {{ ansible_facts.ansible_virtualization_role }}
+    Virtualisation type:    {{ ansible_facts.ansible_virtualization_type }}
+    CPUs:                   {{ ansible_facts.ansible_processor_count }} * {{ ansible_facts.ansible_processor[0] }}
+    Cores/threads:          {{ ansible_facts.ansible_processor_cores }} cores, {{ ansible_facts.ansible_processor_threads_per_core }} threads per core
+    RAM:                    {{ ansible_facts.ansible_memtotal_mb }}
+
+  Disks
+    {% for devicename, devicedata in ansible_facts.ansible_devices.iteritems() %}
+    {{ devicename }}:
+      Size:                 {{ devicedata.size }}
+      Host:                 {{ devicedata.host }}
+      Vendor:               {{ devicedata.vendor }}
+      Model:                {{ devicedata.model }}
+    {%- endfor %}
+
+  Operating system
+
+    Description:            {{ ansible_facts.ansible_lsb.description }}
+    Kernel:                 {{ ansible_facts.ansible_kernel }}
+
+  Networking
+
+    Default IP:             {{ ansible_facts.ansible_default_ipv4.address }} on {{ ansible_facts.ansible_default_ipv4.interface }}
+    FQDN:                   {{ ansible_facts.ansible_fqdn }}
+    Default gateway:        {{ ansible_facts.ansible_default_ipv4.gateway }}
+    Default netmask:        {{ ansible_facts.ansible_default_ipv4.netmask }}
+    All IPv4 addresses:     {{ ansible_facts.ansible_all_ipv4_addresses |join(', ') }}
+
+{% if outstanding_updates -%}
+  Update status
+
+    {{ outstanding_updates.security }} security updates outstanding of {{ outstanding_updates.all }} total
+{% endif %}
