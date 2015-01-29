@@ -1,0 +1,5 @@
+# Ansible investory file - see http://docs.ansible.com/intro_inventory.html for details
+
+[mygroup]
+
+1.2.3.4 
